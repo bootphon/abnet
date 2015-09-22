@@ -54,11 +54,11 @@ import matplotlib.pyplot as plt
 import joblib
 from random import shuffle
 
-from dataset_iterators import DatasetDTWWrdSpkrIterator
-from layers import Linear, ReLU, SigmoidLayer, SoftPlus
-from classifiers import LogisticRegression
-from nnet_archs import ABNeuralNet2Outputs
-from nnet_archs import DropoutABNeuralNet # TODO
+from abnet.dataset_iterators import DatasetDTWWrdSpkrIterator
+from abnet.layers import Linear, ReLU, SigmoidLayer, SoftPlus
+from abnet.classifiers import LogisticRegression
+from abnet.nnet_archs import ABNeuralNet2Outputs
+from abnet.nnet_archs import DropoutABNeuralNet # TODO
 
 DEBUG = False
 
@@ -145,17 +145,22 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
         prefix_fname='',
         debug_print=0,
         debug_time=False,
-        debug_plot=0):
+        debug_plot=0, mv_file="mean_std_spkr_word.npz",
+        mm_file="min_max_spkr_word.npz",
+        output_file_name=None,
+        train_ratio=0.7,
+        dim_embedding=DIM_EMBEDDING):
     """
     Configures and run the neural net on the given dataset.
     """
 
-    output_file_name = dataset_name
-    if prefix_fname != "":
-        output_file_name = prefix_fname + "_" + dataset_name
-    output_file_name += "_" + features + str(nframes)
-    output_file_name += "_" + network_type + "_" + trainer_type
-    output_file_name += "_emb_" + str(DIM_EMBEDDING)
+    if output_file_name == None:
+        output_file_name = dataset_name.replace('.joblib', '')
+        if prefix_fname != "":
+            output_file_name = prefix_fname + "_" + dataset_name
+        output_file_name += "_" + features + str(nframes)
+        output_file_name += "_" + network_type + "_" + trainer_type
+        output_file_name += "_emb_" + str(DIM_EMBEDDING)
     print "output file name:", output_file_name
 
     n_ins = None
@@ -170,7 +175,7 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
     data_same = joblib.load(dataset_path)
     shuffle(data_same)
 
-    dev_split_at = int(0.9 * len(data_same))
+    dev_split_at = int(train_ratio * len(data_same))
 
     print data_same[0]
     print data_same[0][3].shape
@@ -185,7 +190,8 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
     train_set_iterator = DatasetDTWWrdSpkrIterator(
             data_same[:dev_split_at], normalize=normalize,
             min_max_scale=min_max_scale, scale_f1=None, scale_f2=None,
-            nframes=nframes, batch_size=batch_size, marginf=marginf)
+            nframes=nframes, batch_size=batch_size, marginf=marginf,
+            mv_file=mv_file, mm_file=None)
     f1 = train_set_iterator._scale_f1
     f2 = train_set_iterator._scale_f2
 
@@ -193,7 +199,8 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
     valid_set_iterator = DatasetDTWWrdSpkrIterator(
             data_same[dev_split_at:], normalize=normalize,
             min_max_scale=min_max_scale, scale_f1=f1, scale_f2=f2,
-            nframes=nframes, batch_size=batch_size, marginf=marginf)
+            nframes=nframes, batch_size=batch_size, marginf=marginf,
+            mv_file=None, mm_file=mm_file)
 
     assert n_ins != None
     assert n_outs != None
@@ -316,7 +323,10 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
         tmp_train = zip(*train_scoref_w())
         print('  epoch %i, training sim same words %f, diff words %f' % \
               (epoch, numpy.mean(tmp_train[0]), numpy.mean(tmp_train[1])))
-        tmp_train = zip(*train_scoref_s())
+        try:
+            tmp_train = zip(*train_scoref_s())
+        except:
+            pass
         print('  epoch %i, training sim same spkrs %f, diff spkrs %f' % \
               (epoch, numpy.mean(tmp_train[0]), numpy.mean(tmp_train[1])))
         # TODO update lr(t) = lr(0) / (1 + lr(0) * lambda * t)
@@ -343,6 +353,12 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
                 cPickle.dump(nnet, f, protocol=-1)
             # save best validation score and iteration number
             best_validation_loss = this_validation_loss
+        # if epoch % 10 == 0:
+        #     print('dumping intermediate NN')
+        #     with open(output_file_name + '_' + str(epoch) + '.pickle', 'wb') as f:
+        #         cPickle.dump(nnet, f, protocol=-1)
+
+
 
     end_time = time.clock()
     print(('Optimization complete with best validation score of %f, ') %
@@ -403,13 +419,16 @@ if __name__=='__main__':
         batch_size=batch_size, nframes=nframes, features=features,
         init_lr=init_lr, max_epochs=max_epochs, 
         network_type=network_type, trainer_type=trainer_type,
-        layers_types=[ReLU, ReLU, ReLU],
+        layers_types=[SigmoidLayer, SigmoidLayer, SigmoidLayer],
         layers_sizes=[500, 500],
         loss=loss,
         prefix_fname=prefix_fname,
         debug_print=debug_print,
         debug_time=debug_time,
-        debug_plot=debug_plot)
+        debug_plot=debug_plot,
+        mv_file=dataset_name + "_mean_std.npz",
+        mm_file=dataset_name + "_min_max.npz",
+        train_ratio=0.7)
     # TODO I-vector features that are averaged at least on a whole word (UBM like)
 
     #THEANO_FLAGS='device=gpu0' python run_exp_STD.py --dataset-path=from_aren.joblib --dataset-name=buckeye_STD --nframes=7 --network-type=AB --loss=cos_cos2_w --debug-print=1 --debug-time
