@@ -35,7 +35,7 @@ def do_fbank(fname):
 if __name__ == "__main__":
     try:
         os.makedirs(sys.argv[1])
-    except:
+    except OSError:
         pass
     for fname in sys.argv[2:]:
         bname = os.path.basename(fname)

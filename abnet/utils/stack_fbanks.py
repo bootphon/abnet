@@ -10,6 +10,11 @@ b_a = (NFRAMES - 1) / 2
 FRAMES_PER_SEC = 100  # features frames per second
 FEATURES_RATE = 1. / FRAMES_PER_SEC
 
+try:
+    os.makedirs(sys.argv[1])
+except OSError:
+    pass
+
 for fname in sys.argv[2:]:
     print fname
     fbanks = np.load(fname)

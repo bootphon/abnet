@@ -30,19 +30,24 @@ class PyTest(Command):
 
 setup(
     name='abnet',
-    version='0.1.0',
+    version='interspeech2015',
     author='Gabriel Synnaeve',
     packages=['abnet', 'abnet.utils'],
     # url='http://pypi.python.org/pypi/ABnet/',
     license='license/LICENSE.txt',
     description='ABNet is a "same/different"-based loss trained neural net',
     long_description=open('README.rst').read(),
+    dependency_links = [
+        'http://github.com/bootphon/spectral/tarball/master/#egg=mwv-spectral',
+        'https://github.com/SnippyHolloW/DTW_Cython/tarball/master/#egg=snippy-dtw'],
     install_requires=[
         "python >= 2.7",
         "numpy >= 1.8.0",
         "scipy >= 0.13.0",
         "theano >= 0.6.0",
         "joblib >= 0.8.4",
+        "mwv-spectral",
+        "snippy-dtw",
     ],
     # cmdclass = {'test': PyTest},
 )
