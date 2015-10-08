@@ -44,10 +44,12 @@ echo "Stacking fbanks for evaluation"
 python abnet/utils/stack_fbanks.py ${ENGLISH_FOLDER}"fbanks_normalized_stacked" ${ENGLISH_FOLDER}fbanks_normalized/*
 # Test abnet
 echo "Testing ABnet"
+<<<<<<< HEAD
 # python zerospeech/evaluate.py ${ENGLISH_FOLDER}"abnet.pickle" ${ENGLISH_FOLDER}"fbanks_normalized_stacked" ${ENGLISH_FOLDER}"english_mean_std.npz" ${ENGLISH_FOLDER}"embeddings/" "txt"
 python zerospeech/evaluate.py ${ENGLISH_FOLDER}"abnet.pickle" ${ENGLISH_FOLDER}"fbanks_normalized_stacked" ${ENGLISH_FOLDER}"english_mean_std.npz" ${ENGLISH_FOLDER}"embeddings.h5f"
 
 # Evaluate embeddings
 echo "Evaluating embeddings"
 # ${EVAL1_BIN} -kl -j 10 ${ENGLISH_FOLDER}"embeddings/" ${ENGLISH_FOLDER}"results/"
+python zerospeech/evaluate.py ${ENGLISH_FOLDER}"abnet.pickle" ${ENGLISH_FOLDER}"fbanks_normalized_stacked" ${ENGLISH_FOLDER}"english_mean_std.npz" ${ENGLISH_FOLDER}"embeddings/" "txt"
 

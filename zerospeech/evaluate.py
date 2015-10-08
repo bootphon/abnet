@@ -37,7 +37,7 @@ def evaluate(abnet_pickle, stackedfbanks, mean_std_file, h5features_file, output
             h5features.write(h5features_file, '/features/', [os.path.splitext(os.path.basename(fname))[0]], [times], [emb_wrd])
         else:
             np.savetxt(os.path.join(h5features_file, os.path.splitext(os.path.basename(fname))[0]),
-                       np.hstack((times[:, np.newaxis], emb_wrd)), '%.4f')
+                       np.hstack((times[:, np.newaxis], emb_wrd)))
         print("did " + fname)
 
 if __name__ == '__main__':
