@@ -7,6 +7,7 @@ Usage:
     [--network-type=dropout_net] [--trainer-type=adadelta] 
     [--prefix-output-fname=my_prefix_42] [--debug-print=0] 
     [--debug-time] [--debug-plot=0]
+    [--output-file-name=None]
 
 
 Options:
@@ -40,6 +41,7 @@ Options:
     default is False, using it makes it True
     --debug-plot=int           Level of debug plotting, 1: costs
     default is 0               >= 2: gradients & updates
+    --output-file-name=str     name of pickle file containing the weights
 """
 
 import socket, docopt, cPickle, time, sys, os
@@ -414,6 +416,9 @@ if __name__=='__main__':
     debug_plot = 0
     if arguments['--debug-plot']:
         debug_plot = int(arguments['--debug-plot'])
+    output_file_name = None
+    if arguments['--output-file-name']:
+        output_file_name = arguments['--output-file-name']
 
     run(dataset_path=dataset_path, dataset_name=dataset_name,
         batch_size=batch_size, nframes=nframes, features=features,
@@ -428,7 +433,8 @@ if __name__=='__main__':
         debug_plot=debug_plot,
         mv_file=dataset_name + "_mean_std.npz",
         mm_file=dataset_name + "_min_max.npz",
-        train_ratio=0.7)
+        train_ratio=0.5,
+        output_file_name=output_file_name)
     # TODO I-vector features that are averaged at least on a whole word (UBM like)
 
     #THEANO_FLAGS='device=gpu0' python run_exp_STD.py --dataset-path=from_aren.joblib --dataset-name=buckeye_STD --nframes=7 --network-type=AB --loss=cos_cos2_w --debug-print=1 --debug-time
