@@ -384,7 +384,7 @@ class ABNeuralNet(object):  #NeuralNet):
         self.mean_cos2_sim_cost = T.mean(self.cos2_sim_cost)
         self.sum_cos2_sim_cost = T.sum(self.cos2_sim_cost)
 
-        self.cos_cos2_sim_cost = T.switch(self.y, (1.-self.cos_sim)/2, self.cos_sim ** 2) - L2
+        self.cos_cos2_sim_cost = T.switch(self.y, (1.-self.cos_sim)/2, self.cos_sim ** 2)
         self.mean_cos_cos2_sim_cost = T.mean(self.cos_cos2_sim_cost)
         self.sum_cos_cos2_sim_cost = T.sum(self.cos_cos2_sim_cost)
 

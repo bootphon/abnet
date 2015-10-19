@@ -150,7 +150,7 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
         debug_plot=0, mv_file="mean_std_spkr_word.npz",
         mm_file="min_max_spkr_word.npz",
         output_file_name=None,
-        train_ratio=0.7,
+        train_ratio=0.5,
         dim_embedding=DIM_EMBEDDING):
     """
     Configures and run the neural net on the given dataset.

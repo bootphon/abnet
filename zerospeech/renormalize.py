@@ -44,17 +44,18 @@ def output_vad_fn(fn, dir):
   return os.path.join(dir, stem(fn) + ".vad")
 
 
-make_output_dir(sys.argv[1])
-vad_all = read_vad(sys.argv[2])
+if __name__ == "__main__":
+    make_output_dir(sys.argv[1])
+    vad_all = read_vad(sys.argv[2])
 
-for fn in sys.argv[3:]:
-  feat = np.load(fn)
-  vad = vad_for(fn, vad_all)
-  if vad.shape[0] > 0:
-    feat_vad = only_vad(vad, feat)
-    mean = np.mean(feat_vad, axis=0)
-    std = np.std(feat_vad, axis=0)
-    feat_z = (feat-mean)/std
-    write_npy(feat_z, output_npy_fn(fn, sys.argv[1]))
-    # write_raw(feat_z, output_raw_fn(fn, sys.argv[1]))
-
+    for fn in sys.argv[3:]:
+      feat = np.load(fn)
+      vad = vad_for(fn, vad_all)
+      if vad.shape[0] > 0:
+        feat_vad = only_vad(vad, feat)
+        mean = np.mean(feat_vad, axis=0)
+        std = np.std(feat_vad, axis=0)
+        feat_z = (feat-mean)/std
+        write_npy(feat_z, output_npy_fn(fn, sys.argv[1]))
+        # write_raw(feat_z, output_raw_fn(fn, sys.argv[1]))
+    
