@@ -27,7 +27,7 @@ def do_fbank(fname):
                       nfft=512,               # length of dft
                       do_deltas=False,        # speed
                       do_deltasdeltas=False,  # acceleration
-                      compression="log"
+                      compression="log",
                  )
     fb = fbanks.transform(sound)
     return fb
