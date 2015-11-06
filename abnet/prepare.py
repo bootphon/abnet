@@ -6,7 +6,7 @@ from spectral import Spectral
 from scipy.io import wavfile
 import h5features
 import operator
-from abnet.stack_fbanks import stack_fbanks
+from abnet.utils.stack_fbanks import stack_fbanks
 # MAX_LENGTH_WORDS = 6     # in phones
 # MIN_LENGTH_WORDS = 6     # in phones
 # MIN_FRAMES = 5           # in speech frames
@@ -88,13 +88,15 @@ def h5features_feats2stackedfeats(fb_h5f, stackedfb_h5f):
     def time_f(f):
         return stack_fbanks(h5features.read(fb_h5f, from_internal_file=f,
                                             index=index)[0][f])
-    h5features_fbanks(index['files'], stackedfb_h5f, featfunc=aux, timefunc=time_f)
+    h5features_fbanks(index['files'], stackedfb_h5f, featfunc=aux,
+                      timefunc=time_f)
 
 
 def run(fin, fout, h5f, verbose=0, from_features=False):
     """main function
     
-    fin: same pairs file (word_d, wav1, start1, stop1, wav2, start2, stop2, spk1, spk2
+    fin: same pairs file
+        (word_d, wav1, start1, stop1, wav2, start2, stop2, spk1, spk2)
     fout: joblib file
     h5f: h5features file to compute or use
     from_features: use precomputed features file"""
@@ -112,12 +114,16 @@ def run(fin, fout, h5f, verbose=0, from_features=False):
                 wavs.add(wav2)
         h5features_fbanks(wavs, h5f)
     index = h5features.read_index(h5f)
-            
+
     with open(fin) as rf:
         for line in rf:
-            word, wav1, start1, stop1, wav2, start2, stop2, spk1, spk2 = line.strip().split()
-            start1, stop1, start2, stop2 = map(float, (start1, stop1, start2, stop2))
-            file1, file2 = map(operator.itemgetter(0), map(os.path.splitext, map(os.path.basename, (wav1, wav2))))
+            (word, wav1, start1, stop1,
+             wav2, start2, stop2, spk1, spk2) = line.strip().split()
+            start1, stop1, start2, stop2 = map(float,
+                                               (start1, stop1, start2, stop2))
+            file1, file2 = map(operator.itemgetter(0),
+                               map(os.path.splitext,
+                                   map(os.path.basename, (wav1, wav2))))
             feat1 = h5features.read(h5f, from_internal_file=file1,
                                     from_time=start1, to_time=stop1,
                                     index=index)[1][file1]
@@ -137,10 +143,10 @@ def run(fin, fout, h5f, verbose=0, from_features=False):
                 same_spkrs += 1
             else:
                 diff_spkrs += 1
-    joblib.dump(pairs, fout,
-                compress=3, cache_size=512)
+    joblib.dump(pairs, fout, compress=3, cache_size=512)
     if verbose:
-        print("ratio same spkrs / all:", float(same_spkrs) / (same_spkrs + diff_spkrs))
+        print("ratio same spkrs / all:",
+              float(same_spkrs) / (same_spkrs + diff_spkrs))
 
 
 if __name__ == '__main__':

@@ -307,7 +307,7 @@ class FeaturesAPI:
     def do_dtw_withmargin(self, segment1, segment2, margin):
         feat1 = self.get_features_plusmargin(segment1, margin)
         feat2 = self.get_features_plusmargin(segment2, margin)
-        dtw = DTW(feat1[margin:-margin], feat2[margin:-margin], return_alignment=1)
+        dtw = DTW(feat1[margin:-margin], feat2[margin:-margin], return_alignment=1, python_dist_function=cosine_distance)
         path1_list = dtw[-1][1]
         path1 = np.concatenate((np.arange(margin), np.array(path1_list) + margin,
                                 np.arange(path1_list[-1]+1, path1_list[-1]+1 + margin)))
@@ -317,5 +317,10 @@ class FeaturesAPI:
         assert len(path1) == len(path2), 'path1: {}, {}\npath2:{}, {}'.format(path1, len(path1), path2, len(path2))
         return dtw[0], path1, path2, feat1, feat2
 
+
+def cosine_distance(A, B):
+    return A.T * B / (np.lialg.norm(A) * np.linalg.norm(B))
+
+    
 if __name__ == '__main__':
     sample('../../mydev/abx/fb.h5f', 'testf', pair_list='../../mydev/std/pair_list_1000.txt')
