@@ -337,7 +337,10 @@ def run(dataset_path="from_aren.joblib", dataset_name='timit',
 
         # we check the validation loss on every epoch
         validation_losses_w = zip(*valid_scoref_w())
-        validation_losses_s = zip(*valid_scoref_s())
+        try:
+            validation_losses_s = zip(*valid_scoref_s())
+        except:
+            validation_losses_s = validation_losses_w
         this_validation_loss = 0.25*(1.-numpy.mean(validation_losses_w[0])) +\
                 0.25*numpy.mean(validation_losses_w[1]) +\
                 0.25*(1.-numpy.mean(validation_losses_s[0])) +\
