@@ -10,6 +10,18 @@ FRAMES_PER_SEC = 100  # features frames per second
 FEATURES_RATE = 1. / FRAMES_PER_SEC
 
 
+def h5features_stack_fbanks(fbanks_file, stacked_fbanks_file):
+    import h5features
+    index = h5features.read_index(fbanks_file)
+    files = index['files']
+    for f in files:
+        times, fbanks = h5features.read(
+            fbanks_file, 'features', from_internal_file=f, index=index)
+        stacked_fbanks = stack_fbanks(fbanks[f])
+        h5features.write(stacked_fbanks_file, 'features', [f],
+                         [times[f]], [stacked_fbanks])
+
+
 def stack_fbanks(fbanks, nframes=7):
     fbanks_s = np.zeros((fbanks.shape[0], fbanks.shape[1] * nframes),
             dtype='float32')
