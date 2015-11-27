@@ -143,7 +143,7 @@ def run(fin, fout, h5f, verbose=0, from_features=False):
                 same_spkrs += 1
             else:
                 diff_spkrs += 1
-    joblib.dump(pairs, fout, compress=3, cache_size=512)
+    joblib.dump(pairs, fout, compress=0, cache_size=512)
     if verbose:
         print("ratio same spkrs / all:",
               float(same_spkrs) / (same_spkrs + diff_spkrs))
@@ -154,5 +154,5 @@ if __name__ == '__main__':
     fout = sys.argv[2]
     h5f = sys.argv[3]
 
-    run(fin, fout, h5f)
+    run(fin, fout, h5f, from_features=True)
 
